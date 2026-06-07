@@ -1,0 +1,16 @@
+Value slot (\d+\/\d+)
+Value mac_address (([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]){2})
+Value vlan (\d{1,4})
+Value hic_status ([\S]+( [\S]+)*)
+Value dynamic_unp (\S+)
+Value user_name (\S+)
+
+Start
+  ^Slot  MAC               Vlan  HIC             Dynamic            User$$
+  ^Port  Address                 Status          UNP                Name$$
+  ^[-+\+]+\s*$$ -> unp
+
+unp
+  ^System has no 802.1x client to show$$
+  ^${slot}\s+${mac_address}\s+${vlan}\s+${hic_status}\s+${dynamic_unp}\s+${user_name} -> Record
+  ^. -> Error

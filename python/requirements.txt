@@ -1,0 +1,4 @@
+textfsm-aos>=1.0.0
+textfsm>=1.1.0
+fastapi>=0.115
+uvicorn>=0.34

@@ -1,0 +1,42 @@
+Value Required,Key chassis_id ([1-8])
+Value model_name (\S+)
+Value model_type (\S+)
+Value description (.+)
+Value part_number (\S+)
+Value hardware_revision (\S+)
+Value serial_number (\S+)
+Value manufacture_date (\w{3}\s+\d{1,2}\s\d{4})
+Value fpga_control (\d(.\d+)*)
+Value fpga_power (\d(.\d+)*)
+Value admin_status (POWER ON)
+Value operational_status (\S+)
+Value max_power (\d+)
+Value cpu_model_type (.+)
+Value mac_address (([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]){2})
+Value coreboot_version ((\d+.)+[R]\d+)
+Value onie_version ((\d+\.*)+)
+
+Start
+  ^Chassis ID ${chassis_id} Module in slot CMM-A$$ -> Cmm
+
+Cmm
+  ^Chassis -> Continue.Record
+  ^Chassis ID ${chassis_id} Module in slot CMM-A$$
+  ^\s+Model Name:\s+${model_name},$$
+  ^\s+Module Type:\s+${model_type},$$
+  ^\s+Description:\s+${description},$$
+  ^\s+Part Number:\s+${part_number},$$
+  ^\s+Hardware Revision:\s+${hardware_revision},$$
+  ^\s+Serial Number:\s+${serial_number},$$
+  ^\s+Manufacture Date:\s+${manufacture_date},$$
+  ^\s+FPGA(\/CPLD)*\s*( - Physical )*\s*1:\s+${fpga_control}[,]*$$
+  ^\s+FPGA(\/CPLD)*\s*( - Physical )*\s*2:\s+${fpga_power}[,]*$$
+  ^\s+Admin Status:\s+${admin_status},$$
+  ^\s+Operational Status:\s+${operational_status},$$
+  ^\s+Max Power:\s+${max_power},$$
+  ^\s+CPU Model Type:\s+${cpu_model_type},$$
+  ^\s+MAC Address:\s+${mac_address},*$$
+  ^\s+Coreboot Version:\s+${coreboot_version},*$$
+  ^\s+ONIE Version:\s+${onie_version},*$$
+  ^EOF -> Record
+  ^. -> Error

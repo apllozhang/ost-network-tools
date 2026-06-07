@@ -1,0 +1,17 @@
+Value isid (\d+)
+Value bvlan (\d+)
+Value system_name (.+)
+Value system_bmac (([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]){2})
+Value multicast ((T|R|both)*)
+
+Start
+  ^Legend:\s+\*\s+indicates\s+locally\s+configured\s+ISID$$
+  ^SPB\s+ISIS\s+Services\s+Info:$$
+  ^\s+System$$
+  ^\s+ISID\s+BVLAN\s+(Name\s+:\s+BMAC)\s+MCAST(T/R)\s+$$
+  ^[-+\+]+\s*$$ -> Services
+
+Services
+  ^\*\s+${isid}\s+${bvlan}\s+${system_name}\s+\:\s+${system_bmac}\s*${multicast}\s*$$ -> Record
+  ^ISIDs:\s+\d+
+  ^. -> Error

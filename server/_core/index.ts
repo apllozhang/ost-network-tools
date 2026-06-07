@@ -1,0 +1,62 @@
+import express from "express";
+import cookieParser from "cookie-parser";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { appRouter } from "./router.js";
+import { authMiddleware } from "../auth/middleware.js";
+import { db } from "../db/index.js";
+import { users } from "../../drizzle/schema.js";
+import { eq } from "drizzle-orm";
+import { hashPassword } from "../auth/password.js";
+
+export type { AppRouter } from "./router.js";
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(authMiddleware);
+
+app.use(
+  "/api/trpc",
+  createExpressMiddleware({
+    router: appRouter,
+    createContext: ({ req, res }) => ({
+      req,
+      res,
+      userId: req.user?.userId,
+      username: req.user?.username,
+      role: req.user?.role,
+    }),
+  }),
+);
+
+async function seedAdmin() {
+  const [existing] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.username, "admin"))
+    .limit(1);
+
+  if (!existing) {
+    const { v4: uuid } = await import("uuid");
+    const passwordHash = await hashPassword("admin123");
+    await db.insert(users).values({
+      id: uuid(),
+      username: "admin",
+      passwordHash,
+      displayName: "Administrator",
+      role: "admin",
+    });
+    console.log("Default admin user created (username: admin, password: admin123)");
+  }
+}
+
+app.listen(port, async () => {
+  try {
+    await seedAdmin();
+  } catch (err) {
+    console.error("Failed to seed admin user:", err);
+  }
+  console.log(`Server running on http://localhost:${port}`);
+});

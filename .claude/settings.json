@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'REMINDER: Check if anything from this session is worth saving to memory. If yes, write to memory dir and update MEMORY.md index.'",
+            "statusMessage": "Checking memory save..."
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(npx prettier *)",
+      "Bash(npx eslint *)",
+      "Bash(npx tsc *)",
+      "Bash(git *)",
+      "Bash(openspec *)"
+    ]
+  }
+}

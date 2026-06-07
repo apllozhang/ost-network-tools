@@ -1,0 +1,22 @@
+schema: spec-driven
+
+context: |
+  Tech stack: TypeScript 5.x (strict mode, ES modules), React 19, Vite 7, tRPC 11, Express 4
+  Database: MySQL 8, Drizzle ORM, mysql2
+  UI: shadcn/ui (Radix primitives), Tailwind CSS 4
+  Auth: JWT (jose) + bcryptjs, cookie sessions
+  Testing: Vitest
+  Package manager: pnpm 10
+
+  Product language:
+  - Write OpenSpec proposals and specs in user-facing product behavior language
+  - Requirements should describe the experience, observable behavior, and product contract
+  - Avoid implementation-negative SHALL statements when a positive user outcome can express the same rule
+  - Put internal mechanisms in design.md or tasks.md unless the mechanism is itself part of the user-facing contract
+
+rules:
+  specs:
+    - Prefer user-facing product behavior and observable outcomes over internal implementation mechanics
+    - Include HOW details only when the mechanism is part of the product contract
+  tasks:
+    - Include type-check and test verification tasks

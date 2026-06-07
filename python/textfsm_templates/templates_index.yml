@@ -1,0 +1,113 @@
+---
+- command: history
+  platform: ale_aos8
+- command: show 802.1x users
+  platform: ale_aos6
+- command: show 802.1x users unp
+  platform: ale_aos6
+- command: show 802.1x non-supplicant
+  platform: ale_aos6
+- command: show 802.1x non-supplicant unp
+  platform: ale_aos6
+- command: show chassis
+  platform: ale_aos6
+- command: show chassis
+  platform: ale_aos8
+- command: show cmm
+  platform: ale_aos8
+- command: show command-log
+  platform: ale_aos6
+- command: show arp
+  platform: ale_aos8
+- command: show command-log
+  platform: ale_aos8
+- command: show hardware-info
+  platform: ale_aos8
+- command: show health
+  platform: ale_aos6
+- command: show health
+  platform: ale_aos8
+- command: show history
+  platform: ale_aos6
+- command: show interfaces
+  platform: ale_aos8
+- command: show interfaces status
+  platform: ale_aos6
+- command: show interfaces status
+  platform: ale_aos8  
+- command: show ip interface
+  platform: ale_aos6
+- command: show ip interface
+  platform: ale_aos8
+- command: show ip route
+  platform: ale_aos6
+- command: show ip router database
+  platform: ale_aos8
+- command: show ip routes
+  platform: ale_aos8
+- command: show linkagg
+  platform: ale_aos8
+- command: show linkagg port
+  platform: ale_aos8
+- command: show lldp remote-system
+  platform: ale_aos6
+- command: show log events
+  platform: ale_aos8
+- command: show mac-address-table
+  platform: ale_aos6
+- command: show mac-learning
+  platform: ale_aos8
+- command: show microcode
+  platform: ale_aos6
+- command: show microcode
+  platform: ale_aos8
+- command: show ntp server status
+  platform: ale_aos6
+- command: show ntp server status
+  platform: ale_aos8
+- command: show port-security brief
+  platform: ale_aos8
+- command: show qos log
+  platform: ale_aos8
+- command: show qos port
+  platform: ale_aos8
+- command: show unp user
+  platform: ale_aos8
+- command: show unp user details
+  platform: ale_aos8
+- command: show user
+  platform: ale_aos6
+- command: show user
+  platform: ale_aos8
+- command: show running-directory
+  platform: ale_aos8
+- command: show spb isis services
+  platform: ale_aos8
+- command: show service
+  platform: ale_aos8
+- command: show service spb
+  platform: ale_aos8
+- command: show snmp station
+  platform: ale_aos6
+- command: show snmp station
+  platform: ale_aos8
+- command: show snmp community map
+  platform: ale_aos6
+- command: show snmp community-map
+  platform: ale_aos8
+- command: show spantree ports
+  platform: ale_aos8
+- command: show system
+  platform: ale_aos6
+- command: show system
+  platform: ale_aos8
+- command: show transceivers
+  platform: ale_aos8
+- command: show vlan
+  platform: ale_aos6
+- command: show vlan
+  platform: ale_aos8
+- command: show vlan members
+  platform: ale_aos8
+- command: show vlan port mobile
+  platform: ale_aos6
