@@ -1,0 +1,13 @@
+Value device (\S+)
+Value current (\d+)
+Value range (.+)
+Value danger (\d+)
+Value thresh (\d+)
+Value status (.*)
+
+Start
+  ^Chassis/Device\s*\|?\s*Current\s*\|?\s*Range\s*\|?\s*Danger\s*\|?\s*Thresh\s*\|?\s*Status\s*$$
+  ^[-+|]+\s*$$ -> Data
+
+Data
+  ^\s*${device}\s+${current}\s+${range}\s+${danger}\s+${thresh}\s+${status}\s*$$

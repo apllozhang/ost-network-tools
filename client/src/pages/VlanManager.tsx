@@ -63,7 +63,7 @@ export default function VlanManager() {
         <button
           onClick={() => vlans.refetch()}
           disabled={vlans.isFetching}
-          className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-muted disabled:opacity-50"
         >
           {vlans.isFetching ? "Loading..." : "Refresh"}
         </button>
@@ -124,7 +124,7 @@ export default function VlanManager() {
         <div className="overflow-x-auto">
           <table className="min-w-full border text-sm">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-gray-50 dark:bg-muted">
                 {displayCols.map((col) => (
                   <th
                     key={col}
@@ -142,7 +142,7 @@ export default function VlanManager() {
               {rows.map((row, i) => {
                 const id = row[idCol] ?? "";
                 return (
-                  <tr key={i} className="hover:bg-gray-50">
+                  <tr key={i} className="hover:bg-gray-50 dark:bg-muted">
                     {displayCols.map((col) => (
                       <td key={col} className="border px-3 py-2">
                         {row[col] ?? "—"}

@@ -288,13 +288,19 @@ export default function DeviceDetail({ id }: DeviceDetailProps) {
                   </span>
                 </div>
               </div>
-              <Button
-                onClick={handleCollect}
-                disabled={collectMutation.isPending}
-              >
-                <RefreshCw className={`h-4 w-4 ${collectMutation.isPending ? "animate-spin" : ""}`} />
-                {collectMutation.isPending ? t("device.collecting") : t("device.collect")}
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleCollect}
+                  disabled={collectMutation.isPending}
+                >
+                  <RefreshCw className={`h-4 w-4 ${collectMutation.isPending ? "animate-spin" : ""}`} />
+                  {collectMutation.isPending ? t("device.collecting") : t("device.collect")}
+                </Button>
+              </div>
+
+              <div className="border-t pt-4">
+                <CollectionIntervalSetting />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -411,4 +417,53 @@ function formatRelativeTime(date: Date): string {
   if (diffMin < 60) return `${diffMin}m ago`;
   if (diffHour < 24) return `${diffHour}h ago`;
   return `${diffDay}d ago`;
+}
+
+function CollectionIntervalSetting() {
+  const intervalQuery = trpc.device.getCollectInterval.useQuery();
+  const setIntervalMut = trpc.device.setCollectInterval.useMutation({
+    onSuccess: () => intervalQuery.refetch(),
+  });
+
+  const current = intervalQuery.data?.interval ?? 30;
+  const [draft, setDraft] = useState<string>(String(current));
+  const [loaded, setLoaded] = useState(false);
+
+  if (!loaded && intervalQuery.data) {
+    setDraft(String(current));
+    setLoaded(true);
+  }
+
+  const handleSave = () => {
+    const val = parseInt(draft, 10);
+    if (isNaN(val) || val < 5 || val > 3600) return;
+    setIntervalMut.mutate({ interval: val });
+  };
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium">Auto-Collection Interval</h3>
+      <div className="flex items-center gap-2">
+        <Input
+          type="number"
+          min={5}
+          max={3600}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          className="w-24"
+        />
+        <span className="text-sm text-muted-foreground">seconds</span>
+        <Button
+          size="sm"
+          onClick={handleSave}
+          disabled={setIntervalMut.isPending || draft === String(current)}
+        >
+          Apply
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Range: 5–3600s. Changes take effect immediately.
+      </p>
+    </div>
+  );
 }

@@ -13,7 +13,7 @@ function DataTable({ rows }: { rows: Record<string, string>[] }) {
     <div className="overflow-x-auto">
       <table className="min-w-full border text-sm">
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-gray-50 dark:bg-muted">
             {columns.map((col) => (
               <th
                 key={col}
@@ -26,7 +26,7 @@ function DataTable({ rows }: { rows: Record<string, string>[] }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-gray-50">
+            <tr key={i} className="hover:bg-gray-50 dark:bg-muted">
               {columns.map((col) => (
                 <td key={col} className="border px-3 py-2">
                   {row[col] ?? "—"}
@@ -69,7 +69,7 @@ export default function TrafficAnalyzer() {
         <button
           onClick={() => activeQuery.refetch()}
           disabled={activeQuery.isFetching}
-          className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-muted disabled:opacity-50"
         >
           {activeQuery.isFetching ? "Loading..." : "Refresh"}
         </button>

@@ -30,7 +30,7 @@ export default function FirmwareManager() {
           <p className="text-red-600">{microcode.error.message}</p>
         )}
         {microcode.data && (
-          <pre className="bg-gray-50 p-3 rounded text-sm overflow-x-auto whitespace-pre-wrap">
+          <pre className="bg-gray-50 dark:bg-muted p-3 rounded text-sm overflow-x-auto whitespace-pre-wrap">
             {microcode.data.raw}
           </pre>
         )}
@@ -44,7 +44,7 @@ export default function FirmwareManager() {
           <p className="text-red-600">{chassis.error.message}</p>
         )}
         {chassis.data && (
-          <pre className="bg-gray-50 p-3 rounded text-sm overflow-x-auto whitespace-pre-wrap">
+          <pre className="bg-gray-50 dark:bg-muted p-3 rounded text-sm overflow-x-auto whitespace-pre-wrap">
             {chassis.data.raw}
           </pre>
         )}
@@ -80,7 +80,7 @@ export default function FirmwareManager() {
         )}
 
         {gaData && (
-          <div className="bg-gray-50 p-3 rounded text-sm space-y-1">
+          <div className="bg-gray-50 dark:bg-muted p-3 rounded text-sm space-y-1">
             <p>
               <span className="font-medium">Model:</span>{" "}
               {gaData.model || "—"}

@@ -121,6 +121,19 @@ export default function DeviceList() {
     },
   });
 
+  const deleteDevice = trpc.device.delete.useMutation({
+    onSuccess: () => devicesQuery.refetch(),
+  });
+
+  const updateMutation = trpc.device.update.useMutation({
+    onSuccess: () => {
+      devicesQuery.refetch();
+      setEditDevice(null);
+    },
+  });
+
+  const [editDevice, setEditDevice] = useState<DeviceListItem | null>(null);
+
   // ── Table columns ────────────────────────────────────────────────
   const columns = useMemo<ColumnDef<DeviceListItem>[]>(
     () => [
@@ -197,6 +210,20 @@ export default function DeviceList() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setLocation(`/devices/${row.original.id}`)}>
                 {t("device.overview")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setEditDevice(row.original)}>
+                {t("device.edit", "Edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => {
+                  if (confirm(t("device.confirmDelete", `Delete "${row.original.name}"?`))) {
+                    deleteDevice.mutate({ id: row.original.id });
+                  }
+                }}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t("device.delete", "Delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -305,6 +332,46 @@ export default function DeviceList() {
                 {createMutation.isPending ? "..." : t("device.addDevice")}
               </Button>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Device Dialog */}
+        <Dialog open={!!editDevice} onOpenChange={(open) => !open && setEditDevice(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("device.edit", "Edit Device")}</DialogTitle>
+            </DialogHeader>
+            {editDevice && (
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{t("device.deviceName")}</label>
+                  <Input
+                    value={editDevice.name}
+                    onChange={(e) => setEditDevice({ ...editDevice, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{t("device.ipAddress")}</label>
+                  <Input
+                    value={editDevice.ipAddress}
+                    onChange={(e) => setEditDevice({ ...editDevice, ipAddress: e.target.value })}
+                  />
+                </div>
+                <Button
+                  onClick={() => {
+                    updateMutation.mutate({
+                      id: editDevice.id,
+                      name: editDevice.name,
+                      ipAddress: editDevice.ipAddress,
+                    });
+                  }}
+                  disabled={updateMutation.isPending}
+                  className="mt-2"
+                >
+                  {updateMutation.isPending ? "..." : t("device.save", "Save")}
+                </Button>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>

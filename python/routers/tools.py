@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ..services import ping_service, tcp_service, http_service, dns_service, traceroute_service
+from services import ping_service, tcp_service, http_service, dns_service, traceroute_service
 
 router = APIRouter(prefix="/api/tools", tags=["tools"])
 

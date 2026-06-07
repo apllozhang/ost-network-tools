@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -7,6 +8,8 @@ import { db } from "../db/index.js";
 import { users } from "../../drizzle/schema.js";
 import { eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password.js";
+import { startSyslogReceiver } from "../syslog/receiver.js";
+import { startCollector } from "../scheduler/collector.js";
 
 export type { AppRouter } from "./router.js";
 
@@ -62,4 +65,7 @@ app.listen(port, async () => {
     console.warn("  Run `mysql -u root -e \"CREATE DATABASE ost_network_tools\"` then `pnpm db:push`");
     console.warn("  Auth and device management will not work until database is configured.");
   }
+
+  startSyslogReceiver();
+  startCollector();
 });

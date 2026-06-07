@@ -14,11 +14,15 @@ import {
 // ── helpers ──────────────────────────────────────────────────────────────
 
 function str(row: Record<string, string> | undefined, key: string): string {
-  return (row?.[key] ?? "").trim();
+  if (!row) return "";
+  // Try exact key first, then lowercase fallback (TextFSM output uses lowercase)
+  return (row[key] ?? row[key.toLowerCase()] ?? "").trim();
 }
 
 function num(row: Record<string, string> | undefined, key: string): number {
-  const v = Number(str(row, key));
+  if (!row) return 0;
+  const raw = row[key] ?? row[key.toLowerCase()] ?? "";
+  const v = Number(raw.trim());
   return isNaN(v) ? 0 : v;
 }
 
@@ -109,7 +113,7 @@ export function buildChassisFromChassis(
   return parsed.map((row) => {
     const ch = defaultChassisModel();
     ch.number = num(row, "CHASSIS_NUM") || num(row, "CHASSIS");
-    ch.model = str(row, "MODEL") || str(row, "CHASSIS_MODEL");
+    ch.model = str(row, "MODEL") || str(row, "MODEL_NAME") || str(row, "CHASSIS_MODEL");
     ch.serialNumber = str(row, "SERIAL_NUMBER") || str(row, "SERIAL");
     ch.macAddress = str(row, "MAC_ADDRESS") || str(row, "MAC");
     ch.fpga = str(row, "FPGA");
@@ -134,7 +138,7 @@ export function buildTemperatureFromParsed(
   return parsed.map((row) => {
     const info = defaultTemperatureInfo();
     info.current = num(row, "CURRENT") || num(row, "TEMP");
-    info.threshold = num(row, "THRESHOLD") || num(row, "WARNING");
+    info.threshold = num(row, "THRESHOLD") || num(row, "THRESH") || num(row, "WARNING");
     info.danger = num(row, "DANGER") || num(row, "CRITICAL");
     info.status = classifyTemperature(info.current, info.threshold, info.danger);
     return info;

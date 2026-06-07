@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../_core/trpc.js";
+import { router, publicProcedure } from "../_core/trpc.js";
 
 const PYTHON_BACKEND = `http://localhost:${process.env.PYTHON_BACKEND_PORT ?? 8001}`;
 
@@ -17,7 +17,7 @@ async function postToPython<T>(path: string, body: Record<string, unknown>): Pro
 }
 
 export const toolsRouter = router({
-  ping: protectedProcedure
+  ping: publicProcedure
     .input(
       z.object({
         target: z.string(),
@@ -33,7 +33,7 @@ export const toolsRouter = router({
       });
     }),
 
-  tcpCheck: protectedProcedure
+  tcpCheck: publicProcedure
     .input(
       z.object({
         target: z.string(),
@@ -49,7 +49,7 @@ export const toolsRouter = router({
       });
     }),
 
-  httpCheck: protectedProcedure
+  httpCheck: publicProcedure
     .input(
       z.object({
         url: z.string(),
@@ -63,7 +63,7 @@ export const toolsRouter = router({
       });
     }),
 
-  dnsLookup: protectedProcedure
+  dnsLookup: publicProcedure
     .input(
       z.object({
         hostname: z.string(),
@@ -77,7 +77,7 @@ export const toolsRouter = router({
       });
     }),
 
-  traceroute: protectedProcedure
+  traceroute: publicProcedure
     .input(
       z.object({
         target: z.string(),

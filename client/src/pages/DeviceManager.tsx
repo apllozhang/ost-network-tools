@@ -47,7 +47,7 @@ export default function DeviceManager() {
       </div>
       <button
         onClick={handleConnect}
-        disabled={connect.isPending}
+        disabled={connect.isPending || !ip.trim()}
         className="w-full p-2 bg-blue-600 text-white rounded disabled:opacity-50"
       >
         {connect.isPending ? t("connect.connecting") : t("connect.submit")}
@@ -56,7 +56,7 @@ export default function DeviceManager() {
         <p className="text-red-600">{connect.error.message}</p>
       )}
       {connect.data && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded">
+        <div className="p-4 bg-white dark:bg-muted border border-green-400 rounded text-green-800 dark:text-green-300 font-medium">
           <p>{t("connect.success", { name: connect.data.switch?.name })}</p>
         </div>
       )}

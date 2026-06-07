@@ -31,7 +31,7 @@ export default function PoeDiagnostics() {
         <button
           onClick={() => status.refetch()}
           disabled={status.isFetching}
-          className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-muted disabled:opacity-50"
         >
           {status.isFetching ? "Loading..." : "Refresh"}
         </button>
@@ -63,7 +63,7 @@ export default function PoeDiagnostics() {
         <div className="overflow-x-auto">
           <table className="min-w-full border text-sm">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-gray-50 dark:bg-muted">
                 {columns.map((col) => (
                   <th key={col} className="border px-3 py-2 text-left font-medium">
                     {col}
@@ -76,7 +76,7 @@ export default function PoeDiagnostics() {
               {rows.map((row, i) => {
                 const port = row[portCol] ?? "";
                 return (
-                  <tr key={i} className="hover:bg-gray-50">
+                  <tr key={i} className="hover:bg-gray-50 dark:bg-muted">
                     {columns.map((col) => (
                       <td key={col} className="border px-3 py-2">
                         {row[col] ?? "—"}

@@ -214,12 +214,16 @@ function PingForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
 
   const handleExecute = async () => {
     if (!target) return;
-    const data = await ping.mutateAsync({
-      target,
-      count: Number(count),
-      timeout: Number(timeout),
-    });
-    onResult({ type: "ping", data: data as PingResult });
+    try {
+      const data = await ping.mutateAsync({
+        target,
+        count: Number(count),
+        timeout: Number(timeout),
+      });
+      onResult({ type: "ping", data: data as PingResult });
+    } catch {
+      // error shown via ping.isError / ping.error
+    }
   };
 
   return (
@@ -257,6 +261,9 @@ function PingForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
       <Button onClick={handleExecute} disabled={!target || ping.isPending}>
         {ping.isPending ? t("tools.executing") : t("tools.execute")}
       </Button>
+      {ping.isError && (
+        <p className="text-sm text-red-600">{ping.error.message}</p>
+      )}
     </div>
   );
 }
@@ -270,12 +277,16 @@ function TcpForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
 
   const handleExecute = async () => {
     if (!target || !port) return;
-    const data = await tcpCheck.mutateAsync({
-      target,
-      port: Number(port),
-      timeout: Number(timeout),
-    });
-    onResult({ type: "tcp", data: data as TcpResult });
+    try {
+      const data = await tcpCheck.mutateAsync({
+        target,
+        port: Number(port),
+        timeout: Number(timeout),
+      });
+      onResult({ type: "tcp", data: data as TcpResult });
+    } catch {
+      // error shown via tcpCheck.isError
+    }
   };
 
   return (
@@ -313,6 +324,9 @@ function TcpForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
       <Button onClick={handleExecute} disabled={!target || tcpCheck.isPending}>
         {tcpCheck.isPending ? t("tools.executing") : t("tools.execute")}
       </Button>
+      {tcpCheck.isError && (
+        <p className="text-sm text-red-600">{tcpCheck.error.message}</p>
+      )}
     </div>
   );
 }
@@ -325,11 +339,15 @@ function HttpForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
 
   const handleExecute = async () => {
     if (!url) return;
-    const data = await httpCheck.mutateAsync({
-      url,
-      timeout: Number(timeout),
-    });
-    onResult({ type: "http", data: data as HttpResult });
+    try {
+      const data = await httpCheck.mutateAsync({
+        url,
+        timeout: Number(timeout),
+      });
+      onResult({ type: "http", data: data as HttpResult });
+    } catch {
+      // error shown via httpCheck.isError
+    }
   };
 
   return (
@@ -357,6 +375,9 @@ function HttpForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
       <Button onClick={handleExecute} disabled={!url || httpCheck.isPending}>
         {httpCheck.isPending ? t("tools.executing") : t("tools.execute")}
       </Button>
+      {httpCheck.isError && (
+        <p className="text-sm text-red-600">{httpCheck.error.message}</p>
+      )}
     </div>
   );
 }
@@ -369,8 +390,12 @@ function DnsForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
 
   const handleExecute = async () => {
     if (!hostname) return;
-    const data = await dnsLookup.mutateAsync({ hostname, recordType });
-    onResult({ type: "dns", data: data as DnsResult });
+    try {
+      const data = await dnsLookup.mutateAsync({ hostname, recordType });
+      onResult({ type: "dns", data: data as DnsResult });
+    } catch {
+      // error shown via dnsLookup.isError
+    }
   };
 
   return (
@@ -402,6 +427,9 @@ function DnsForm({ onResult }: { onResult: (r: ToolResultData) => void }) {
       <Button onClick={handleExecute} disabled={!hostname || dnsLookup.isPending}>
         {dnsLookup.isPending ? t("tools.executing") : t("tools.execute")}
       </Button>
+      {dnsLookup.isError && (
+        <p className="text-sm text-red-600">{dnsLookup.error.message}</p>
+      )}
     </div>
   );
 }
@@ -415,12 +443,16 @@ function TracerouteForm({ onResult }: { onResult: (r: ToolResultData) => void })
 
   const handleExecute = async () => {
     if (!target) return;
-    const data = await traceroute.mutateAsync({
-      target,
-      maxHops: Number(maxHops),
-      timeout: Number(timeout),
-    });
-    onResult({ type: "traceroute", data: data as TracerouteResult });
+    try {
+      const data = await traceroute.mutateAsync({
+        target,
+        maxHops: Number(maxHops),
+        timeout: Number(timeout),
+      });
+      onResult({ type: "traceroute", data: data as TracerouteResult });
+    } catch {
+      // error shown via traceroute.isError
+    }
   };
 
   return (
@@ -458,6 +490,9 @@ function TracerouteForm({ onResult }: { onResult: (r: ToolResultData) => void })
       <Button onClick={handleExecute} disabled={!target || traceroute.isPending}>
         {traceroute.isPending ? t("tools.executing") : t("tools.execute")}
       </Button>
+      {traceroute.isError && (
+        <p className="text-sm text-red-600">{traceroute.error.message}</p>
+      )}
     </div>
   );
 }

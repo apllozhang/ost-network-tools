@@ -266,6 +266,7 @@ export const events = mysqlTable(
       "maintenance_started",
       "maintenance_ended",
       "system",
+      "syslog_received",
     ]).notNull(),
     severity: mysqlEnum("severity", [
       "critical",

@@ -129,4 +129,40 @@ export const snmpRouter = router({
         });
       }
     }),
+
+  setupV2c: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+        password: z.string(),
+        stationIp: z.string(),
+        deviceId: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const client = resolveClient(input.deviceId);
+      const results: Array<{ step: string; output: string }> = [];
+
+      const steps = [
+        { name: "AAA auth SNMP local", cmd: buildCommand("AAA_AUTH_SNMP_LOCAL") },
+        { name: "Create SNMP user", cmd: buildCommand("SNMP_USER_NO_AUTH", input.username, input.password) },
+        { name: "Disable SNMP security", cmd: buildCommand("SNMP_SECURITY_NO_SECURITY") },
+        { name: "Enable community-map mode", cmd: buildCommand("SNMP_COMMUNITY_MAP_MODE") },
+        { name: "Add SNMP v2c station", cmd: buildCommand("SNMP_STATION_V2", input.stationIp, input.username) },
+      ];
+
+      for (const step of steps) {
+        try {
+          const output = await client.executeCli(step.cmd);
+          results.push({ step: step.name, output });
+        } catch (err) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed at "${step.name}": ${err}`,
+          });
+        }
+      }
+
+      return { success: true, steps: results };
+    }),
 });

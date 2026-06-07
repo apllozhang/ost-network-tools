@@ -1,4 +1,24 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(npx prettier *)",
+      "Bash(npx eslint *)",
+      "Bash(npx tsc *)",
+      "Bash(git *)",
+      "Bash(openspec *)",
+      "Bash(pip install *)",
+      "Bash(curl -s -X POST http://localhost:8001/api/parse -H 'Content-Type: application/json' -d '{\"platform\":\"ale_aos8\",\"command\":\"show temperature\",\"raw_output\":\"Chassis/Device | Current |    Range    | Danger | Thresh |  Status\\\\n---------------+---------+-------------+--------+--------+------------\\\\n  1/CMMA            56        0 to 75      80       75     UNDER THRESHOLD\"}')",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import textfsm_aos; import os; print\\(os.path.dirname\\(textfsm_aos.__file__\\)\\)\")",
+      "Read(//c/Users/Administrator/AppData/Local/Programs/Python/Python314/Lib/site-packages/textfsm_aos/**)",
+      "Bash(npx vitest *)",
+      "Bash(mkdir -p \"d:/Claude code/OST/server/syslog\")"
+    ],
+    "additionalDirectories": [
+      "d:\\Claude code\\OST\\server"
+    ]
+  },
   "hooks": {
     "Stop": [
       {
@@ -11,16 +31,6 @@
           }
         ]
       }
-    ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(pnpm *)",
-      "Bash(npx prettier *)",
-      "Bash(npx eslint *)",
-      "Bash(npx tsc *)",
-      "Bash(git *)",
-      "Bash(openspec *)"
     ]
   }
 }

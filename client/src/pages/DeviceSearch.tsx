@@ -102,7 +102,7 @@ export default function DeviceSearch() {
         <div className="overflow-x-auto">
           <table className="min-w-full border text-sm">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-gray-50 dark:bg-muted">
                 {columns.map((col) => (
                   <th
                     key={col}
@@ -115,7 +115,7 @@ export default function DeviceSearch() {
             </thead>
             <tbody>
               {rows.map((row, i) => (
-                <tr key={i} className="hover:bg-gray-50">
+                <tr key={i} className="hover:bg-gray-50 dark:bg-muted">
                   {columns.map((col) => (
                     <td key={col} className="border px-3 py-2">
                       {row[col] ?? "—"}

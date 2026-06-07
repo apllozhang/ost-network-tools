@@ -8,6 +8,18 @@ export default function SnmpManager() {
   const [stationVersion, setStationVersion] = useState("v2c");
   const [stationUser, setStationUser] = useState("");
 
+  // SNMP v2c quick setup
+  const [v2cUsername, setV2cUsername] = useState("snmpuser");
+  const [v2cPassword, setV2cPassword] = useState("snmpuser");
+  const [v2cStationIp, setV2cStationIp] = useState("10.10.10.165");
+
+  const setupV2c = trpc.snmp.setupV2c.useMutation({
+    onSuccess: () => {
+      utils.snmp.listCommunities.refetch();
+      utils.snmp.listStations.refetch();
+    },
+  });
+
   const utils = trpc.useUtils();
 
   const communities = trpc.snmp.listCommunities.useQuery({});
@@ -90,13 +102,76 @@ export default function SnmpManager() {
             stations.refetch();
           }}
           disabled={communities.isFetching || stations.isFetching}
-          className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-muted disabled:opacity-50"
         >
           {communities.isFetching || stations.isFetching
             ? "Loading..."
             : "Refresh"}
         </button>
       </div>
+
+      {/* ── Quick Setup SNMP v2c ─────────────────────────────── */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Quick Setup SNMP v2c</h2>
+        <div className="flex items-end gap-2 border rounded p-3 bg-blue-50 dark:bg-blue-950">
+          <div>
+            <label className="block text-sm font-medium mb-1">Username</label>
+            <input
+              type="text"
+              value={v2cUsername}
+              onChange={(e) => setV2cUsername(e.target.value)}
+              className="border rounded p-1 w-36"
+              placeholder="snmpuser"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              type="text"
+              value={v2cPassword}
+              onChange={(e) => setV2cPassword(e.target.value)}
+              className="border rounded p-1 w-36"
+              placeholder="snmpuser"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Station IP</label>
+            <input
+              type="text"
+              value={v2cStationIp}
+              onChange={(e) => setV2cStationIp(e.target.value)}
+              className="border rounded p-1 w-40"
+              placeholder="10.10.10.165"
+            />
+          </div>
+          <button
+            onClick={() => {
+              if (!v2cUsername.trim() || !v2cPassword.trim() || !v2cStationIp.trim()) return;
+              setupV2c.mutate({
+                username: v2cUsername.trim(),
+                password: v2cPassword.trim(),
+                stationIp: v2cStationIp.trim(),
+              });
+            }}
+            disabled={setupV2c.isPending}
+            className="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+          >
+            {setupV2c.isPending ? "Configuring..." : "Setup v2c"}
+          </button>
+        </div>
+
+        {setupV2c.isSuccess && (
+          <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 rounded">
+            <p className="text-green-800 font-medium">✓ SNMP v2c configured successfully</p>
+            {setupV2c.data?.steps?.map((s, i) => (
+              <p key={i} className="text-sm text-green-700">• {s.step}</p>
+            ))}
+          </div>
+        )}
+        {setupV2c.isError && (
+          <p className="text-red-600">{setupV2c.error.message}</p>
+        )}
+      </section>
 
       {/* ── Communities Section ────────────────────────────────── */}
       <section className="space-y-4">
@@ -156,7 +231,7 @@ export default function SnmpManager() {
           <div className="overflow-x-auto">
             <table className="min-w-full border text-sm">
               <thead>
-                <tr className="bg-gray-50">
+                <tr className="bg-gray-50 dark:bg-muted">
                   <th className="border px-3 py-2 text-left font-medium">
                     Name
                   </th>
@@ -177,7 +252,7 @@ export default function SnmpManager() {
                 {commRows.map((row, i) => {
                   const name = row[commNameCol] ?? "";
                   return (
-                    <tr key={i} className="hover:bg-gray-50">
+                    <tr key={i} className="hover:bg-gray-50 dark:bg-muted">
                       <td className="border px-3 py-2">
                         {row[commNameCol] ?? "—"}
                       </td>
@@ -279,7 +354,7 @@ export default function SnmpManager() {
           <div className="overflow-x-auto">
             <table className="min-w-full border text-sm">
               <thead>
-                <tr className="bg-gray-50">
+                <tr className="bg-gray-50 dark:bg-muted">
                   <th className="border px-3 py-2 text-left font-medium">
                     IP
                   </th>
@@ -307,7 +382,7 @@ export default function SnmpManager() {
                 {stationRows.map((row, i) => {
                   const ip = row[stationIpCol] ?? "";
                   return (
-                    <tr key={i} className="hover:bg-gray-50">
+                    <tr key={i} className="hover:bg-gray-50 dark:bg-muted">
                       <td className="border px-3 py-2">
                         {row[stationIpCol] ?? "—"}
                       </td>

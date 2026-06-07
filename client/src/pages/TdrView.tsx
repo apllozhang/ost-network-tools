@@ -30,7 +30,7 @@ export default function TdrView() {
         <button
           onClick={() => clearStats.mutate({ port })}
           disabled={clearStats.isPending}
-          className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-muted disabled:opacity-50"
         >
           Clear
         </button>
@@ -51,7 +51,7 @@ export default function TdrView() {
       {runTest.data && (
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Results</h2>
-          <pre className="bg-gray-50 border rounded p-4 text-sm overflow-x-auto">
+          <pre className="bg-gray-50 dark:bg-muted border rounded p-4 text-sm overflow-x-auto">
             {JSON.stringify(runTest.data, null, 2)}
           </pre>
         </div>

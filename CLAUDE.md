@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-OST — Enterprise network operations platform for ALE OmniSwitch device management, diagnostics, and monitoring.
+OST Network Tools — enterprise network operations platform for managing ALE (Alcatel-Lucent Enterprise) OmniSwitch devices. Features: device CRUD, alert lifecycle, PoE diagnostics, TDR cable testing, VLAN/SNMP/traffic management, network diagnostic tools.
 
 ## Behavioral Guidelines
 
@@ -82,13 +82,28 @@ After each task, check if anything is worth remembering for future sessions:
 | Testing | Vitest |
 | Package Manager | pnpm 10 |
 
+## Setup
+
+```bash
+git clone https://github.com/apllozhang/ost-network-tools.git
+cd ost-network-tools
+cp .env.example .env
+pnpm install
+cd python && pip install -r requirements.txt && cd ..
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS ost_network_tools CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+pnpm db:push
+# Terminal 1: cd python && python main.py
+# Terminal 2: pnpm dev
+```
+
 ## Commands
 
 ```bash
-pnpm dev          # Dev server
+pnpm dev          # Dev server (TS on :3000, Python on :8001)
 pnpm build        # Production build (vite + esbuild)
 pnpm check        # tsc --noEmit
 pnpm test         # vitest
+pnpm lint         # eslint
 pnpm format       # Prettier all files
 pnpm db:push      # Drizzle schema push
 ```
@@ -100,9 +115,25 @@ Single test: `pnpm vitest run <path-to-test>.test.ts`
 - **Server entry**: `server/_core/index.ts` — Express + tRPC at `/api/trpc`
 - **tRPC hierarchy**: `publicProcedure` → `protectedProcedure` → `adminProcedure` → `superAdminProcedure` + `permissionProcedure(perm)`
 - **Frontend**: React + Wouter routing in `client/src/App.tsx`
-- **Schema**: `drizzle/schema.ts`, migrations in `drizzle/`
+- **Schema**: `drizzle/schema.ts`, migrations in `drizzle/` (10 tables: users, sites, devices, monitorTargets, probeResults, deviceMetrics, alerts, alertTimeline, events, auditLogs)
 - **Shared**: Permission matrix in `shared/const.ts`
 - **Path aliases**: `@/*` → `client/src/*`, `@shared/*` → `shared/*`
+
+## Dual-Server Architecture
+
+Two servers run simultaneously:
+1. **TypeScript** (Express + tRPC) on port 3000 — API + Vite dev frontend
+2. **Python** (FastAPI + Uvicorn) on port 8001 — TextFSM parsing + network diagnostics
+
+Use `start.sh` to launch both. The TS server proxies TextFSM/diagnostic requests to Python via `server/aos/textfsm.ts` and `server/routers/tools.ts`.
+
+Python source: `python/` (routers, services, 40+ TextFSM templates for AOS6/AOS8 CLI output).
+
+## Key Patterns
+
+- **Alert state machine** (`server/alerts/state-machine.ts`): 7 states (triggered → unconfirmed → confirmed → processing → recovered → closed, plus silenced). Invalid transitions throw.
+- **Audit logging** (`server/audit/logger.ts`): fire-and-forget on every mutation. Never breaks main operation.
+- **AOS REST client** (`server/aos/rest-client.ts`): HTTPS + token auth, 3 retries with 3s delay, connection pool with 30-min TTL.
 
 ## Skill Routing
 
@@ -118,3 +149,23 @@ Simple bugfix → skip OpenSpec, go straight to `/systematic-debugging`.
 
 - Windows 10, bash — Unix shell syntax, forward slashes
 - Node >= 22, pnpm >= 10
+- Copy `.env.example` to `.env` — required vars: `DATABASE_URL`, `JWT_SECRET`, `PORT`, `PYTHON_BACKEND_PORT`
+
+## Skill routing
+
+When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
+
+Key routing rules:
+- Product ideas/brainstorming → invoke /office-hours
+- Strategy/scope → invoke /plan-ceo-review
+- Architecture → invoke /plan-eng-review
+- Design system/plan review → invoke /design-consultation or /plan-design-review
+- Full review pipeline → invoke /autoplan
+- Bugs/errors → invoke /investigate
+- QA/testing site behavior → invoke /qa or /qa-only
+- Code review/diff check → invoke /review
+- Visual polish → invoke /design-review
+- Ship/deploy/PR → invoke /ship or /land-and-deploy
+- Save progress → invoke /context-save
+- Resume context → invoke /context-restore
+- Author a backlog-ready spec/issue → invoke /spec

@@ -31,15 +31,17 @@ def execute_ping(target: str, count: int = 4, timeout: int = 5) -> dict:
         jitter = None
 
         if is_windows:
-            # Windows: Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
-            match = re.search(r"Received\s*=\s*(\d+)", raw_output)
+            # Windows EN: Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+            # Windows CN: 数据包: 已发送 = 2，已接收 = 2，丢失 = 0 (0% 丢失)
+            match = re.search(r"(?:Received|已接收)\s*=\s*(\d+)", raw_output)
             if match:
                 received = int(match.group(1))
                 loss_rate = (sent - received) / sent if sent > 0 else 1.0
 
-            # Windows: Minimum = 1ms, Maximum = 2ms, Average = 1ms
+            # Windows EN: Minimum = 1ms, Maximum = 2ms, Average = 1ms
+            # Windows CN: 最短 = 0ms，最长 = 0ms，平均 = 0ms
             stats = re.search(
-                r"Minimum\s*=\s*([\d.]+)ms.*Maximum\s*=\s*([\d.]+)ms.*Average\s*=\s*([\d.]+)ms",
+                r"(?:Minimum|最短)\s*=\s*([\d.]+)ms[，,]\s*(?:Maximum|最长)\s*=\s*([\d.]+)ms[，,]\s*(?:Average|平均)\s*=\s*([\d.]+)ms",
                 raw_output,
                 re.IGNORECASE,
             )

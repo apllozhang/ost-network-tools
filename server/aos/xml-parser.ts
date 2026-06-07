@@ -18,9 +18,21 @@ interface AosXmlResult {
 export function parseAosXml(xml: string): AosXmlResult {
   try {
     const parsed = parser.parse(xml);
-    const data = parsed?.nodes?.result?.data;
-    if (!data || typeof data !== "object") return {};
-    return data as AosXmlResult;
+    const result = parsed?.nodes?.result;
+    if (!result) return {};
+
+    // Auth responses put data inside <data> (e.g. <token>)
+    // CLI responses put text in <output> at result level, <data> is empty
+    const data = result.data;
+    const output = typeof result.output === "string" ? result.output : undefined;
+
+    if (data && typeof data === "object") {
+      return { ...data, output } as AosXmlResult;
+    }
+    if (output !== undefined) {
+      return { output } as AosXmlResult;
+    }
+    return {};
   } catch {
     return {};
   }

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import type { PaginatedResponse } from "../../shared/types.js";
 import { logAudit } from "../audit/logger.js";
+import { collectDevice, getCollectInterval, setCollectInterval } from "../scheduler/collector.js";
 
 // ── Input schemas ───────────────────────────────────────────────────
 
@@ -355,79 +356,40 @@ export const deviceRouter = router({
       throw new Error("NOT_FOUND");
     }
 
-    // Dynamic import to avoid circular deps
-    const { AosRestClient } = await import("../aos/rest-client.js");
-    const { parser } = await import("../aos/store.js");
-    const { buildSwitchFromSystem } = await import("../aos/models/builder.js");
-    const { getClient } = await import("../aos/connection-pool.js");
+    await collectDevice(device);
 
-    const startMs = Date.now();
-    const client = getClient(input.id) ?? new AosRestClient(device.ipAddress);
+    await logAudit({
+      userId: ctx.userId!,
+      username: ctx.username!,
+      action: "collect",
+      objectType: "device",
+      objectId: input.id,
+      afterValue: { manual: true },
+      ipAddress: ctx.req.ip,
+      userAgent: ctx.req.headers["user-agent"],
+    });
 
-    try {
-      const rawOutput = await client.executeCli("show system");
-      const responseMs = Date.now() - startMs;
+    const [updated] = await db
+      .select()
+      .from(devices)
+      .where(eq(devices.id, input.id))
+      .limit(1);
 
-      const parsed = await parser.parse("ale_aos8", "show system", rawOutput);
-      const switchModel = buildSwitchFromSystem(parsed, device.ipAddress);
-
-      // Update device record
-      await db
-        .update(devices)
-        .set({
-          name: switchModel.name || device.name,
-          osVersion: switchModel.version || device.osVersion,
-          status: "healthy" as const,
-          uptime: switchModel.upTime || device.uptime,
-          lastCollectionAt: new Date(),
-          lastResponseMs: responseMs,
-        })
-        .where(eq(devices.id, input.id));
-
-      // Store metrics
-      const metricId = uuidv4();
-      await db.insert(deviceMetrics).values({
-        id: metricId,
-        deviceId: input.id,
-        cpuUsage: null,
-        memoryUsage: null,
-        temperature: null,
-      });
-
-      const [updated] = await db
-        .select()
-        .from(devices)
-        .where(eq(devices.id, input.id))
-        .limit(1);
-
-      await logAudit({
-        userId: ctx.userId!,
-        username: ctx.username!,
-        action: "collect",
-        objectType: "device",
-        objectId: input.id,
-        afterValue: { responseMs: Date.now() - startMs },
-        ipAddress: ctx.req.ip,
-        userAgent: ctx.req.headers["user-agent"],
-      });
-
-      return updated;
-    } catch {
-      // Mark as offline on failure
-      await db
-        .update(devices)
-        .set({
-          status: "offline" as const,
-          lastCollectionAt: new Date(),
-          lastResponseMs: Date.now() - startMs,
-        })
-        .where(eq(devices.id, input.id));
-
-      throw new Error("COLLECTION_FAILED");
-    }
+    return updated;
   }),
 
   getSites: protectedProcedure.query(async () => {
     return db.select({ id: sites.id, name: sites.name }).from(sites);
   }),
+
+  getCollectInterval: protectedProcedure.query(() => {
+    return { interval: getCollectInterval() };
+  }),
+
+  setCollectInterval: adminProcedure
+    .input(z.object({ interval: z.number().int().min(5).max(3600) }))
+    .mutation(({ input }) => {
+      setCollectInterval(input.interval);
+      return { interval: getCollectInterval() };
+    }),
 });
