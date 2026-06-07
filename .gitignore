@@ -27,6 +27,10 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Local docs (not for GitHub)
+前端建议.md
+开发建议.md
+
 # Logs
 *.log
 
