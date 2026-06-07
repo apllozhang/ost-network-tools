@@ -88,7 +88,7 @@ ALE network engineers who:
 - User authentication/authorization (single-user local tool)
 - Cloud deployment
 - Real-time streaming (SSE/WebSocket) for live switch monitoring
-- SNMP polling/trap receiver (use OVMonitor instead)
+- SNMP polling/trap receiver (future enhancement)
 - AOS 6.x support (templates exist but not prioritized)
 
 ## Sources
@@ -286,8 +286,8 @@ Flow:
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Frontend framework | React + shadcn/ui | Aligned with OST/ALE DAN CPL/OVMonitor stack |
-| Backend framework | Express + tRPC | Aligned with existing projects |
+| Frontend framework | React + shadcn/ui | Modern, accessible component library |
+| Backend framework | Express + tRPC | Type-safe end-to-end API |
 | CLI parsing | TextFSM via Python subprocess | 54 battle-tested templates, no need to rewrite regex |
 | SSH library | ssh2 (Node.js) | Most mature Node.js SSH library |
 | XML parsing | fast-xml-parser | AOS REST API returns XML, not JSON |

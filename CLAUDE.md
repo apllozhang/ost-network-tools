@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-OST — TypeScript full-stack project. Tech stack aligned with ALE DAN CPL / OVMonitor.
+OST — Enterprise network operations platform for ALE OmniSwitch device management, diagnostics, and monitoring.
 
 ## Behavioral Guidelines
 
