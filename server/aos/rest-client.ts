@@ -4,6 +4,9 @@ import { AOS_REST_ACCEPT, AOS_CONTEXT } from "../../shared/const.js";
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 3000;
 
+// AOS switches use self-signed certificates.
+// NODE_TLS_REJECT_UNAUTHORIZED=0 is set in .env to allow HTTPS without verification.
+
 export class AosRestClient {
   private ip: string;
   private token: string | null = null;
@@ -60,7 +63,7 @@ export class AosRestClient {
 
   async executeMibSet(
     urn: string,
-    data: Record<string, string>
+    data: Record<string, string>,
   ): Promise<Record<string, string>> {
     this.ensureConnected();
 
@@ -125,7 +128,7 @@ export class AosRestClient {
 
   private async fetchWithRetry(
     url: string,
-    init?: RequestInit
+    init?: RequestInit,
   ): Promise<Response> {
     let lastError: Error | null = null;
 

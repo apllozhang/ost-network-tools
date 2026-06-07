@@ -53,10 +53,13 @@ async function seedAdmin() {
 }
 
 app.listen(port, async () => {
+  console.log(`Server running on http://localhost:${port}`);
+
   try {
     await seedAdmin();
   } catch (err) {
-    console.error("Failed to seed admin user:", err);
+    console.warn("⚠ Database not available — skipping admin seed.");
+    console.warn("  Run `mysql -u root -e \"CREATE DATABASE ost_network_tools\"` then `pnpm db:push`");
+    console.warn("  Auth and device management will not work until database is configured.");
   }
-  console.log(`Server running on http://localhost:${port}`);
 });
